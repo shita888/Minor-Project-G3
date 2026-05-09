@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Water Demand Prediction</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(RGB(10, 32, 60),RGB(28, 60, 100) );
+            text-align: center;
+        }
+
+        .container {
+            width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        input, select {
+            width: 90%;
+            padding: 8px;
+            margin: 8px; 
+
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #339f38;
+            color:  white;
+
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        #result {
+            margin-top: 15px;
+            font-size: 18px;
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>💧 Water Demand Prediction (MP)</h2>
+
+    <input id="temp" placeholder="Temperature (°C)">
+    <input id="rain" placeholder="Rainfall (mm)">
+    <input id="pop" placeholder="Population">
+    <input id="res" placeholder="Reservoir Level">
+    <input id="tariff" placeholder="Water Tariff">
+
+    <input id="lag1" placeholder="Previous Day Demand">
+    <input id="lag7" placeholder="Last Week Demand">
+
+    <br>
+
+    <select id="city">
+        <option>Bhopal</option>
+        <option>Indore</option>
+        <option>Jabalpur</option>
+    </select>
+
+    <select id="season">
+        <option>Summer</option>
+        <option>Monsoon</option>
+        <option>Winter</option>
+    </select>
+
+    <br><br>
+
+    <button onclick="predict()">Predict</button>
+
+    <h3 id="result"></h3>
+</div>
+
+<script>
+async function predict() {
+
+    const data = {
+        Temperature: Number(document.getElementById("temp").value),
+        Rainfall: Number(document.getElementById("rain").value),
+        Population: Number(document.getElementById("pop").value),
+        Reservoir_Level: Number(document.getElementById("res").value),
+        Water_Tariff: Number(document.getElementById("tariff").value),
+        Holiday: 0,
+
+        lag_1: Number(document.getElementById("lag1").value),
+        lag_7: Number(document.getElementById("lag7").value),
+
+        City: document.getElementById("city").value,
+        Season: document.getElementById("season").value
+    };
+
+    try {
+        const response = await fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        document.getElementById("result").innerText =
+            "Predicted Water Demand: " + result.prediction;
+
+    } catch (error) {
+        document.getElementById("result").innerText =
+            "❌ Error connecting to server";
+    }
+}
+</script>
+
+</body>
+</html>

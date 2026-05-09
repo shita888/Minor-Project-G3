@@ -1,0 +1,108 @@
+ 
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --deep-ocean: #0a1628;
+      --accent-blue: #4a9fd4;
+      --glacial: #d4eef9;
+      --white: #ffffff;
+    }
+    html, body { width: 100%; height: 100%; overflow-x: hidden; font-family: 'Raleway', sans-serif; }
+
+    .ocean-bg {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #0a1628 0%, #0d2444 30%, #1a3a6e 60%, #0f2a50 80%, #091220 100%);
+      position: relative; overflow: hidden;
+    }
+    .ocean-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(74,159,212,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(26,58,110,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30% at 60% 30%, rgba(255,255,255,0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .rain-canvas { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+    .rain-streak {
+      position: absolute; width: 1.5px;
+      background: linear-gradient(180deg, transparent, rgba(168,216,240,0.5), transparent);
+      border-radius: 1px;
+      animation: rain-fall linear infinite;
+      transform: rotate(-20deg); transform-origin: top center;
+    }
+    @keyframes rain-fall {
+      0% { transform: rotate(-20deg) translateY(-150px); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 0.7; }
+      100% { transform: rotate(-20deg) translateY(110vh); opacity: 0; }
+    }
+
+    .hero-section {
+      min-height: calc(100vh - 50px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 60px 20px;
+      position: relative;
+    }
+    .hero-content { position: relative; z-index: 2; }
+    .hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.2rem, 6vw, 4.2rem);
+      font-weight: 700; color: var(--white);
+      letter-spacing: 0.04em; line-height: 1.15;
+      text-shadow: 0 2px 40px rgba(74,159,212,0.4), 0 0 80px rgba(74,159,212,0.15);
+      margin-bottom: 18px;
+      animation: fadeUp 1s ease both;
+    }
+    .hero-sub {
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      color: rgba(212,238,249,0.85); font-weight: 300;
+      letter-spacing: 0.06em; margin-bottom: 48px;
+      animation: fadeUp 1s 0.2s ease both;
+    }
+    .explore-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #1a2f50, #0d1f38);
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      padding: 15px 42px; border-radius: 50px;
+      font-family: 'Raleway', sans-serif;
+      font-size: 1rem; font-weight: 600;
+      letter-spacing: 0.07em; cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+      animation: fadeUp 1s 0.4s ease both;
+      position: relative; overflow: hidden;
+    }
+    .explore-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 36px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.5);
+      background: linear-gradient(135deg, #223b62, #112440);
+    }
+    .explore-btn:active { transform: translateY(0) scale(0.99); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .footer-nav {
+      background: #050e1c; color: rgba(255,255,255,0.6);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 40px; font-size: 13px;
+      position: relative; z-index: 10;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-nav a {
+      color: rgba(255,255,255,0.6); text-decoration: none;
+      margin-left: 28px; font-weight: 500;
+      letter-spacing: 0.04em; transition: color 0.25s;
+    }
+    .footer-nav a:hover { color: var(--accent-blue); }
+
+    @media(max-width: 480px) {
+      .footer-nav { flex-direction: column; gap: 10px; text-align: center; padding: 14px 20px; }
+    }
+  

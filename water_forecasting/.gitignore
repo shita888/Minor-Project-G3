@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+node_modules/
+venv/
+.env
+project_model/capacity_model/capacity_model.pkl

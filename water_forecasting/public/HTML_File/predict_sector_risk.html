@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqua Forecast - Sector Wise Risk Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Raleway', sans-serif; background: #0a1128; color: #fff; min-height: 100vh; }
+        .ocean-bg {
+            min-height: 100vh; position: relative; overflow: hidden; padding: 40px 20px;
+        }
+        .ocean-bg::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(74, 159, 212, 0.18) 0%, transparent 60%),
+                        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(26, 58, 110, 0.35) 0%, transparent 55%);
+            pointer-events: none; z-index: 0;
+        }
+        .container {
+            max-width: 600px; margin: 0 auto; position: relative; z-index: 2;
+            background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 14px; padding: 40px; backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h2 { font-family: 'Cinzel', serif; color: #4a9fd4; text-align: center; margin-bottom: 30px; letter-spacing: 2px; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+        input {
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px; color: #fff; font-family: 'Raleway', sans-serif; transition: all 0.3s ease;
+        }
+        input:focus { outline: none; border-color: #4a9fd4; background: rgba(0,0,0,0.4); }
+
+        .btn-predict {
+            width: 100%; padding: 15px; margin-top: 10px;
+            background: linear-gradient(145deg, rgba(42, 109, 181, 0.9), rgba(26, 58, 110, 0.9));
+            border: 1px solid rgba(74, 159, 212, 0.5); border-radius: 8px;
+            color: #fff; font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-predict:hover { background: linear-gradient(145deg, rgba(58, 130, 200, 1), rgba(36, 78, 140, 1)); transform: translateY(-2px); }
+
+        #result { margin-top: 25px; font-size: 1.1rem; text-align: center; font-weight: 500; color: #4a9fd4; min-height: 30px; line-height: 1.6;}
+        
+        .risk-high { color: #ff4d4d !important; font-weight: bold; }
+        .risk-medium { color: #ffa64d !important; font-weight: bold; }
+        .risk-low { color: #4dff88 !important; font-weight: bold; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #4a9fd4; text-decoration: none; font-size: 0.9rem; transition: color 0.3s; position: relative; z-index: 2;}
+        .back-link:hover { color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="ocean-bg">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <a href="/" class="back-link">← Back to Menu</a>
+        </div>
+        <div class="container">
+            <h2>Sector Wise Risk Assessment</h2>
+            
+            <div class="form-group">
+                <label>Population (Sector)</label>
+                <input type="number" id="population" placeholder="e.g. 500000">
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Capacity (MCM)</label>
+                    <input type="number" id="capacity" placeholder="e.g. 1000">
+                </div>
+                <div class="form-group">
+                    <label>Reservoir Level (%)</label>
+                    <input type="number" id="reservoirlevel" placeholder="e.g. 60">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Inflow (MCM/day)</label>
+                    <input type="number" id="inflow" placeholder="e.g. 50">
+                </div>
+                <div class="form-group">
+                    <label>Outflow (MCM/day)</label>
+                    <input type="number" id="outflow" placeholder="e.g. 40">
+                </div>
+            </div>
+
+            <button class="btn-predict" onclick="predict()">Assess Risk</button>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+    async function predict() {
+        const btn = document.querySelector('.btn-predict');
+        const resDiv = document.getElementById("result");
+        btn.innerText = "Assessing...";
+        resDiv.innerText = "";
+        
+        const data = {
+            population: Number(document.getElementById("population").value) || 0,
+            capacity: Number(document.getElementById("capacity").value) || 0,
+            inflow: Number(document.getElementById("inflow").value) || 0,
+            outflow: Number(document.getElementById("outflow").value) || 0,
+            reservoirlevel: Number(document.getElementById("reservoirlevel").value) || 0
+        };
+
+        try {
+            const response = await fetch("/predict_sector", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) throw new Error("Server response was not ok.");
+
+            const result = await response.json();
+            if (result.error) {
+                resDiv.innerHTML = `<span style="color:#ff6b6b">❌ Error: ${result.error}</span>`;
+            } else {
+                let riskClass = "";
+                if(result.risk_level === "High Risk") riskClass = "risk-high";
+                else if(result.risk_level === "Medium Risk") riskClass = "risk-medium";
+                else riskClass = "risk-low";
+
+                resDiv.innerHTML = `
+                    Predicted Demand: <span style="color:#fff">${result.predicted_demand.toLocaleString()} units</span><br>
+                    Sector Risk Level: <span class="${riskClass}">${result.risk_level}</span>
+                `;
+            }
+        } catch (error) {
+            resDiv.innerHTML = `<span style="color:#ff6b6b">❌ Error connecting to assessment server. Is the sector_model Flask app running on port 5001?</span>`;
+        } finally {
+            btn.innerText = "Assess Risk";
+        }
+    }
+    </script>
+</body>
+</html>
